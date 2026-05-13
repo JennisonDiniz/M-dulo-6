@@ -1,92 +1,108 @@
-// components/CardsResumo.js
+import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { cores, espacamento, raio } from '../theme';
+import { cores, espacamento } from '../theme';
+
+// Formatador de moeda profissional
+const formatarMoeda = (valor) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(valor);
+};
+
+// Sub-componente para manter o código limpo e profissional
+const CardFinanceiro = ({ titulo, valor, tipo }) => {
+  const isReceita = tipo === 'receita';
+  const corPrincipal = isReceita ? cores.receita : cores.despesa;
+  const corFundo = isReceita ? cores.receitaFundo : cores.despesaFundo;
+  const iconName = isReceita ? 'arrow-up-circle' : 'arrow-down-circle';
+
+  return (
+    <View style={[styles.card, { backgroundColor: corFundo }]}>
+      <View style={styles.headerCard}>
+        <View style={[styles.iconWrapper, { backgroundColor: 'white' }]}>
+          <Ionicons name={iconName} size={22} color={corPrincipal} />
+        </View>
+        <Text style={styles.label}>{titulo}</Text>
+      </View>
+      
+      <View style={styles.content}>
+        <Text style={[styles.valor, { color: '#1A1A1A' }]} numberOfLines={1}>
+          {formatarMoeda(valor)}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 export function CardsResumo({ receitas, despesas }) {
   return (
-    <View style={styles.row}>
-      {/* Card de Receitas */}
-      <View style={[styles.card, styles.shadow, { backgroundColor: cores.receitaFundo }]}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="trending-up" size={20} color={cores.receita} />
-        </View>
-        <View style={styles.content}>
-          <Text style={styles.label}>Receitas</Text>
-          <Text style={[styles.valor, { color: cores.receita }]}>
-            R$ {receitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </Text>
-        </View>
-      </View>
-
-      {/* Card de Despesas */}
-      <View style={[styles.card, styles.shadow, { backgroundColor: cores.despesaFundo }]}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="trending-down" size={20} color={cores.despesa} />
-        </View>
-        <View style={styles.content}>
-          <Text style={styles.label}>Despesas</Text>
-          <Text style={[styles.valor, { color: cores.despesa }]}>
-            R$ {despesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </Text>
-        </View>
-      </View>
+    <View style={styles.container}>
+      <CardFinanceiro titulo="Receitas" valor={receitas} tipo="receita" />
+      <CardFinanceiro titulo="Despesas" valor={despesas} tipo="despesa" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
+  container: {
     flexDirection: 'row',
-    gap: 16,
-    marginHorizontal: espacamento.md,
+    gap: 12,
+    paddingHorizontal: espacamento.md,
     marginTop: espacamento.md,
-    justifyContent: 'space-between',
   },
   card: {
     flex: 1,
     padding: 16,
-    borderRadius: 20, // Bordas mais arredondadas para um ar moderno
-    minHeight: 110,
-    justifyContent: 'space-between',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)', // Borda sutil "glassmorphism"
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  content: {
-    alignItems: 'flex-start', // Texto alinhado à esquerda fica mais elegante
-  },
-  label: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
-    marginBottom: 2,
-    textTransform: 'uppercase', // Estilo label de dashboard
-    letterSpacing: 0.5,
-  },
-  valor: {
-    fontSize: 17,
-    fontWeight: '800', // Fonte bem pesada para o valor
-  },
-  shadow: {
+    borderColor: 'rgba(255, 255, 255, 0.8)', // Borda clara para efeito de profundidade
+    
+    // Sombra suave e moderna
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 3,
+        elevation: 4,
       },
     }),
+  },
+  headerCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 8,
+  },
+  iconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Sombra interna leve para o ícone
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  label: {
+    fontSize: 13,
+    color: '#6F767E',
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
+  content: {
+    justifyContent: 'flex-end',
+  },
+  valor: {
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.5,
   },
 });
