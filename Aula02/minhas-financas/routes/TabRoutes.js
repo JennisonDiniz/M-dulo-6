@@ -1,36 +1,40 @@
-// routes/TabRoutes.js
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-// A aba Dashboard aponta para um Stack (criado no Passo 8), não diretamente para a tela
-import { DashboardStack } from './DashboardStack';
-import { NovaTransacaoScreen } from '../screens/NovaTransacaoScreen';
-import { RelatorioScreen } from '../screens/RelatorioScreen';
-import { SobreScreen } from '../screens/SobreScreen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context'; // ← IMPORTANTE
+
+import { DashboardStack }      from './DashboardStack';
+import { NovaTransacaoScreen }  from '../screens/NovaTransacaoScreen';
+import { RelatorioScreen }      from '../screens/RelatorioScreen';
+import { MapaScreen }           from '../screens/MapaScreen';
+import { SobreScreen }          from '../screens/SobreScreen';
 
 const Tab = createBottomTabNavigator();
 
 const ICONES_TAB = {
-  Dashboard: { ativa: 'home', inativa: 'home-outline' },
-  'Nova Transação': { ativa: 'add-circle', inativa: 'add-circle-outline' },
-  Relatório: { ativa: 'bar-chart', inativa: 'bar-chart-outline' },
-  Sobre: { ativa: 'information-circle', inativa: 'information-circle-outline' },
+  Dashboard:        { ativa: 'home',                inativa: 'home-outline'                 },
+  'Nova Transação':  { ativa: 'add-circle',           inativa: 'add-circle-outline'           },
+  Relatório:         { ativa: 'bar-chart',            inativa: 'bar-chart-outline'            },
+  Mapa:              { ativa: 'map',                  inativa: 'map-outline'                  },
+  Sobre:             { ativa: 'information-circle',   inativa: 'information-circle-outline'   },
 };
 
 export function TabRoutes() {
+  const insets = useSafeAreaInsets(); // ← Pega o tamanho da "barrinha" do sistema
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#2c3e50',
+        tabBarActiveTintColor:   '#2c3e50',
         tabBarInactiveTintColor: '#95a5a6',
         tabBarStyle: {
           backgroundColor: '#fff',
-          borderTopColor: '#eee',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 4,
-          marginBottom: 50, // No alinhamento do ícones e texto da BOTTOM NAVIGATION BAR (barra inferior).
+          borderTopColor:  '#eee',
+          // Ajusta a altura somando o espaço do sistema + o que você quer de padding
+          height: 60 + insets.bottom, 
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop:      4,
         },
         tabBarIcon: ({ focused, color, size }) => {
           const { ativa, inativa } = ICONES_TAB[route.name];
@@ -38,10 +42,11 @@ export function TabRoutes() {
         },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardStack} />
-      <Tab.Screen name="Nova Transação" component={NovaTransacaoScreen} />
-      <Tab.Screen name="Relatório" component={RelatorioScreen} />
-      <Tab.Screen name="Sobre" component={SobreScreen} />
+      <Tab.Screen name="Dashboard"       component={DashboardStack}      />
+      <Tab.Screen name="Nova Transação"  component={NovaTransacaoScreen} />
+      <Tab.Screen name="Relatório"       component={RelatorioScreen}     />
+      <Tab.Screen name="Mapa"            component={MapaScreen}          />
+      <Tab.Screen name="Sobre"           component={SobreScreen}         />
     </Tab.Navigator>
   );
-};
+}
